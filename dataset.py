@@ -17,3 +17,19 @@ class MovingMnistDataset(chainer.dataset.DatasetMixin):
     def get_example(self, i):
         ind = self.l + i
         return self.data[:self.inn, ind, :, :].astype(np.int32), self.data[self.inn:self.inn+self.outn, ind, :, :].astype(np.int32)
+
+class JmaGpzDataset(chainer.dataset.DatasetMixin):
+    def __init__(self, l, r, inn, outn, path="./jmagpz.npz"):
+        self.l = l
+        self.r = r
+        self.inn = inn
+        self.outn = outn
+        self.data = np.load(path)['array']
+        self.data = np.transpose(self.data, (1,0,2,3))
+
+    def __len__(self):
+        return self.r - self.l
+
+    def get_example(self, i):
+        ind = self.l + i
+        return self.data[:self.inn, ind, :, :].astype(np.float32), self.data[self.inn:self.inn+self.outn, ind, :, :].astype(np.float32)
