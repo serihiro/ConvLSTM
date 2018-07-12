@@ -178,7 +178,7 @@ class JmaGpzNetwork(Chain):
             if self.directory is not None:
                 for j in range(x.shape[0]):
                     filename = self.directory + "input" + str(j) + "-" + str(i) + ".png"
-                    self.save_image(x[j, i, :, :].data, filename)
+                    self.save_image(x[j, i, :, :], filename)
 
             xi = Variable(self.xp.array([x[:, i, :, :]], dtype=self.xp.float32))
             h1 = self.e1(xi)
@@ -205,11 +205,11 @@ class JmaGpzNetwork(Chain):
             if self.directory is not None:
                 for j in range(t.shape[0]):
                     filename = self.directory + "truth" + str(j) + "-" + str(i) + ".png"
-                    self.save_image(t[j, i, :, :].data, filename)
+                    self.save_image(t[j, i, :, :], filename)
                     filename = self.directory + "output" + str(j) + "-" + str(i) + ".png"
                     self.save_image(self.xp.argmax(ans[j, :, :, :].data, 0).astype(np.int32), filename)
 
-            cur_loss = F.sum(F.absolute_error(ans[0], t[:, i, :, :]))
+            cur_loss = F.sum(F.mean_squared_error(ans[0], t[:, i, :, :]))
             loss = cur_loss if loss is None else loss + cur_loss
 
         reporter.report({'loss': loss}, self)
