@@ -209,7 +209,7 @@ class JmaGpzNetwork(Chain):
                     filename = self.directory + "output" + str(j) + "-" + str(i) + ".png"
                     self.save_image(self.xp.argmax(ans[j, :, :, :].data, 0).astype(np.int32), filename)
 
-            cur_loss = F.absolute_error(ans[0], t[:, i, :, :])
+            cur_loss = F.sum(F.absolute_error(ans[0], t[:, i, :, :]))
             loss = cur_loss if loss is None else loss + cur_loss
 
         reporter.report({'loss': loss}, self)
