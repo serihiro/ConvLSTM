@@ -21,7 +21,7 @@ def generate():
     args = parser.parse_args()
 
     test = dataset.JmaGpzDataset(0, 4416, args.inf, args.outf)
-    model = network.JmaGpzNetwork(sz=[160, 120, 120], n=1, directory="img/")
+    model = network.JmaGpzNetwork(sz=[128, 64, 64], n=1, directory="img/")
 
     if args.model != None:
         print( "loading model from " + args.model )

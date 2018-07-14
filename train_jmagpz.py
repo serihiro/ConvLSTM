@@ -29,7 +29,7 @@ def train():
     test = dataset.JmaGpzDataset(3000, 4416, args.inf, args.outf)
     test_iter = iterators.SerialIterator(test, batch_size=args.batch, repeat=False, shuffle=False)
 
-    model = network.JmaGpzNetwork(sz=[160, 120, 120], n=1)
+    model = network.JmaGpzNetwork(sz=[128, 64, 64], n=1)
 
     if args.model != None:
         print("loading model from " + args.model)

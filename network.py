@@ -148,12 +148,12 @@ class MovingMnistNetwork(Chain):
 class JmaGpzNetwork(Chain):
     def __init__(self, sz=[256, 128, 128], n=256, directory=None):
         super(JmaGpzNetwork, self).__init__(
-            e1=ConvLSTM(n, sz[0], 5),
-            e2=ConvLSTM(sz[0], sz[1], 5),
-            e3=ConvLSTM(sz[1], sz[2], 5),
-            p1=ConvLSTM(n, sz[0], 5),
-            p2=ConvLSTM(sz[0], sz[1], 5),
-            p3=ConvLSTM(sz[1], sz[2], 5),
+            e1=ConvLSTM(n, sz[0], 3),
+            e2=ConvLSTM(sz[0], sz[1], 3),
+            e3=ConvLSTM(sz[1], sz[2], 3),
+            p1=ConvLSTM(n, sz[0], 3),
+            p2=ConvLSTM(sz[0], sz[1], 3),
+            p3=ConvLSTM(sz[1], sz[2], 3),
             last=L.Convolution2D(sum(sz), n, 1)
         )
 
