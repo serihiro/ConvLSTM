@@ -181,6 +181,7 @@ class JmaGpzNetwork(Chain):
                     self.save_image(x[j, i, :, :], filename)
 
             xi = Variable(self.xp.array([x[:, i, :, :]], dtype=self.xp.float32))
+            xi = F.transpose(xi, (1, 0, 2, 3))
             h1 = self.e1(xi)
             h2 = self.e2(h1)
             self.e3(h2)
