@@ -23,11 +23,16 @@ def train():
     parser.add_argument('--inf', type=int, default=10)
     parser.add_argument('--outf', type=int, default=10)
     parser.add_argument('--batch', '-b', type=int, default=8)
+    parser.add_argument('--train_data_index', '-train_data', nargs='+', default=[0, 4000])
+    parser.add_argument('--test_data_index', '-test_data', nargs='+', default=[4000, 5225])
+    parser.add_argument('--files', '-f', nargs='+', default=['jmagpz.npz'])
     args = parser.parse_args()
 
-    train = dataset.JmaGpzDataset(0, 4000, args.inf, args.outf)
+    train = dataset.JmaGpzDataset(args.train_data_index[0], args.train_data_index[1],
+                                  args.inf, args.outf, file=args.files)
     train_iter = iterators.SerialIterator(train, batch_size=args.batch, shuffle=True)
-    test = dataset.JmaGpzDataset(4000, 5225, args.inf, args.outf)
+    test = dataset.JmaGpzDataset(args.test_data_index[0], args.test_data_index[0],
+                                 args.inf, args.outf, file=args.files)
     test_iter = iterators.SerialIterator(test, batch_size=args.batch, repeat=False, shuffle=False)
 
     model = network.JmaGpzNetwork(sz=[128, 64, 64], n=1)
