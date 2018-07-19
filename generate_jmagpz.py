@@ -20,7 +20,7 @@ def generate():
     parser.add_argument('--outf', type=int, default=10)
     args = parser.parse_args()
 
-    test = dataset.JmaGpzDataset(0, 4416, args.inf, args.outf)
+    test = dataset.JmaGpzDataset(0, 5225, args.inf, args.outf)
     model = network.JmaGpzNetwork(sz=[128, 64, 64], n=1, directory="img/")
 
     if args.model != None:

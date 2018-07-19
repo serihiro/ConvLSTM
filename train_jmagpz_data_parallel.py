@@ -14,7 +14,8 @@ import network
 
 def train():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--gpu', '-g', type=int, default=-1)
+    parser.add_argument('--gpu0', '-g', type=int, default=0, help='First GPU ID')
+    parser.add_argument('--gpu1', '-G', type=int, default=1, help='Second GPU ID')
     parser.add_argument('--model', '-m', type=str, default=None)
     parser.add_argument('--opt', type=str, default=None)
     parser.add_argument('--epoch', '-e', type=int, default=3)
@@ -35,9 +36,7 @@ def train():
         print("loading model from " + args.model)
         serializers.load_npz(args.model, model)
 
-    if args.gpu >= 0:
-        cuda.get_device_from_id(0).use()
-        model.to_gpu()
+    chainer.backends.cuda.get_device_from_id(args.gpu0).use()
 
     opt = optimizers.Adam(alpha=args.lr)
     opt.setup(model)
@@ -46,10 +45,15 @@ def train():
         print("loading opt from " + args.opt)
         serializers.load_npz(args.opt, opt)
 
-    updater = training.StandardUpdater(train_iter, opt, device=args.gpu)
+    updater = training.updaters.ParallelUpdater(
+        train_iter,
+        opt,
+        devices={'main': args.gpu0, 'second': args.gpu1},
+    )
+
     trainer = training.Trainer(updater, (args.epoch, 'epoch'), out='results')
 
-    trainer.extend(extensions.Evaluator(test_iter, model, device=args.gpu))
+    trainer.extend(extensions.Evaluator(test_iter, model, device=args.gpu0))
     trainer.extend(extensions.LogReport(trigger=(10, 'iteration')))
     trainer.extend(extensions.PrintReport(['epoch', 'main/loss', 'validation/main/loss']))
     trainer.extend(extensions.ProgressBar(update_interval=1))
