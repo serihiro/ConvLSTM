@@ -60,9 +60,9 @@ def train():
     trainer = training.Trainer(updater, (args.epoch, 'epoch'), out=args.result)
 
     trainer.extend(extensions.Evaluator(test_iter, model, device=args.gpu0))
-    trainer.extend(extensions.LogReport(trigger=(1, 'iteration')))
-    trainer.extend(extensions.PrintReport(['epoch', 'main/loss', 'validation/main/loss']))
-    trainer.extend(extensions.ProgressBar(update_interval=1))
+    #trainer.extend(extensions.LogReport(trigger=(1, 'iteration')))
+    #trainer.extend(extensions.PrintReport(['epoch', 'main/loss', 'validation/main/loss']))
+    #trainer.extend(extensions.ProgressBar(update_interval=1))
 
     trainer.run()
 

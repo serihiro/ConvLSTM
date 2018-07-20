@@ -42,16 +42,16 @@ class JmaGpzDataset(chainer.dataset.DatasetMixin):
             self.r = int(r)
             self.inn = int(inn)
             self.outn = int(outn)
-            self.data = cp.load(file_path)['array']
-            self.data = cp.transpose(self.data, (1, 0, 2, 3))
+            self.data = np.load(file_path, mmap_mode='r')['array']
+            self.data = np.transpose(self.data, (1, 0, 2, 3))
 
         def __len__(self):
             return self.r - self.l
 
         def get_example(self, i):
             ind = self.l + i
-            return self.data[:self.inn, ind, :, :].astype(cp.float32), \
-                   self.data[self.inn:self.inn + self.outn, ind, :, :].astype(cp.float32)
+            return self.data[:self.inn, ind, :, :].astype(np.float32), \
+                   self.data[self.inn:self.inn + self.outn, ind, :, :].astype(np.float32)
 
     class MultipleFileData:
         def __init__(self, l, r, inn, outn, file_paths):
@@ -66,8 +66,8 @@ class JmaGpzDataset(chainer.dataset.DatasetMixin):
             file_index = 0
             offset_index = 0
             for file_path in file_paths:
-                file = cp.load(file_path)['array']
-                file = cp.transpose(file, (1, 0, 2, 3))
+                file = np.load(file_path, mmap_mode='r')['array']
+                file = np.transpose(file, (1, 0, 2, 3))
 
                 file_len = file.shape[1]
                 k = list(range(offset_index, offset_index + file_len))
@@ -85,5 +85,5 @@ class JmaGpzDataset(chainer.dataset.DatasetMixin):
             file = self.files[self.file_map[self.l + i]]
             # adjust index
             ind = self.l + i - file[1]
-            return file[0][:self.inn, ind, :, :].astype(cp.float32), \
-                   file[0][self.inn:self.inn + self.outn, ind, :, :].astype(cp.float32)
+            return file[0][:self.inn, ind, :, :].astype(np.float32), \
+                   file[0][self.inn:self.inn + self.outn, ind, :, :].astype(np.float32)
