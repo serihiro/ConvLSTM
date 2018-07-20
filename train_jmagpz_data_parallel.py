@@ -26,6 +26,7 @@ def train():
     parser.add_argument('--train_data_index', '-train_data', nargs='+', default=[0, 4000])
     parser.add_argument('--test_data_index', '-test_data', nargs='+', default=[4000, 5225])
     parser.add_argument('--files', '-f', nargs='+', default=['jmagpz.npz'])
+    parser.add_argument('--result', '-r', type=str, default='results')
     args = parser.parse_args()
 
     train = dataset.JmaGpzDataset(args.train_data_index[0], args.train_data_index[1],
@@ -56,7 +57,7 @@ def train():
         devices={'main': args.gpu0, 'second': args.gpu1},
     )
 
-    trainer = training.Trainer(updater, (args.epoch, 'epoch'), out='results')
+    trainer = training.Trainer(updater, (args.epoch, 'epoch'), out=args.result)
 
     trainer.extend(extensions.Evaluator(test_iter, model, device=args.gpu0))
     trainer.extend(extensions.LogReport(trigger=(1, 'iteration')))
@@ -65,11 +66,11 @@ def train():
 
     trainer.run()
 
-    modelname = "./results/model"
+    modelname = f'{args.result}/model'
     print("saving model to " + modelname)
     serializers.save_npz(modelname, model)
 
-    optname = "./results/opt"
+    optname = f'{args.result}/opt'
     print("saving opt to " + optname)
     serializers.save_npz(optname, opt)
 
