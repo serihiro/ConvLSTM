@@ -208,7 +208,7 @@ class JmaGpzNetwork(Chain):
                     filename = self.directory + "truth" + str(j) + "-" + str(i) + ".png"
                     self.save_image(t[j, i, :, :], filename)
                     filename = self.directory + "output" + str(j) + "-" + str(i) + ".png"
-                    self.save_image(self.xp.array(ans[j, 0, :, :].data).astype(np.float32), filename)
+                    self.save_image(self.xp.array(ans[j, 0, :, :].data).astype(self.xp.float32), filename)
 
             cur_loss = F.sum(F.mean_squared_error(ans[:, 0, :, :], t[:, i, :, :]))
             loss = cur_loss if loss is None else loss + cur_loss
