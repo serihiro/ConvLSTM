@@ -31,7 +31,7 @@ def train():
     train = dataset.JmaGpzDataset(args.train_data_index[0], args.train_data_index[1],
                                   args.inf, args.outf, file=args.files)
     train_iter = iterators.SerialIterator(train, batch_size=args.batch, shuffle=True)
-    test = dataset.JmaGpzDataset(args.test_data_index[0], args.test_data_index[0],
+    test = dataset.JmaGpzDataset(args.test_data_index[0], args.test_data_index[1],
                                  args.inf, args.outf, file=args.files)
     test_iter = iterators.SerialIterator(test, batch_size=args.batch, repeat=False, shuffle=False)
 
