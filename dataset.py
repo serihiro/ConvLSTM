@@ -1,5 +1,4 @@
 import numpy as np
-import cupy as cp
 import chainer
 
 
@@ -42,7 +41,7 @@ class JmaGpzDataset(chainer.dataset.DatasetMixin):
             self.r = int(r)
             self.inn = int(inn)
             self.outn = int(outn)
-            self.data = np.load(file_path, mmap_mode='r')['array']
+            self.data = np.load(file_path, mmap_mode='r')
             self.data = np.transpose(self.data, (1, 0, 2, 3))
 
         def __len__(self):
@@ -66,7 +65,7 @@ class JmaGpzDataset(chainer.dataset.DatasetMixin):
             file_index = 0
             offset_index = 0
             for file_path in file_paths:
-                file = np.load(file_path, mmap_mode='r')['array']
+                file = np.load(file_path, mmap_mode='r')
                 file = np.transpose(file, (1, 0, 2, 3))
 
                 file_len = file.shape[1]

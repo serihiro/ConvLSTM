@@ -30,10 +30,10 @@ def train():
 
     train = dataset.JmaGpzDataset(args.train_data_index[0], args.train_data_index[1],
                                   args.inf, args.outf, file=args.files)
-    train_iter = iterators.SerialIterator(train, batch_size=args.batch, shuffle=True)
+    train_iter = iterators.MultiprocessIterator(train, batch_size=args.batch, shuffle=True)
     test = dataset.JmaGpzDataset(args.test_data_index[0], args.test_data_index[1],
                                  args.inf, args.outf, file=args.files)
-    test_iter = iterators.SerialIterator(test, batch_size=args.batch, repeat=False, shuffle=False)
+    test_iter = iterators.MultiprocessIterator(test, batch_size=args.batch, repeat=False, shuffle=False)
 
     model = network.JmaGpzNetwork(sz=[128, 64, 64], n=1)
 
@@ -56,9 +56,9 @@ def train():
     trainer = training.Trainer(updater, (args.epoch, 'epoch'), out=args.result)
 
     trainer.extend(extensions.Evaluator(test_iter, model, device=args.gpu))
-    # trainer.extend(extensions.LogReport(trigger=(10, 'iteration')))
-    # trainer.extend(extensions.PrintReport(['epoch', 'main/loss', 'validation/main/loss']))
-    # trainer.extend(extensions.ProgressBar(update_interval=1))
+    trainer.extend(extensions.LogReport(trigger=(1, 'iteration')))
+    trainer.extend(extensions.PrintReport(['epoch', 'main/loss', 'validation/main/loss']))
+    trainer.extend(extensions.ProgressBar(update_interval=1))
 
     trainer.run()
 
