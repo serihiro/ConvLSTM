@@ -216,3 +216,53 @@ class JmaGpzNetwork(Chain):
         reporter.report({'loss': loss}, self)
 
         return loss
+
+    def eval(self, x, t):
+        self.e1.reset_state()
+        self.e2.reset_state()
+        self.e3.reset_state()
+
+        for i in range(x.shape[1]):
+            xi = Variable(self.xp.array([x[:, i, :, :]], dtype=self.xp.float32))
+            xi = F.transpose(xi, (1, 0, 2, 3))
+            h1 = self.e1(xi)
+            h2 = self.e2(h1)
+            self.e3(h2)
+
+        self.p1.reset_state(self.e1.pc, self.e1.ph)
+        self.p2.reset_state(self.e2.pc, self.e2.ph)
+        self.p3.reset_state(self.e3.pc, self.e3.ph)
+
+        results = []
+        for i in range(t.shape[1]):
+            xs = x.shape
+
+            h1 = self.p1(Variable(self.xp.zeros((xs[0], self.n, xs[2], xs[3]), dtype=self.xp.float32)))
+            h2 = self.p2(h1)
+            h3 = self.p3(h2)
+
+            h = F.concat((h1, h2, h3))
+            ans = self.last(h)
+
+            inferred = ans[:, 0, :, :][0].data
+            inferred[inferred < 0.05] = 0
+            inferred[inferred >= 0.05] = 1
+            expected = t[:, i, :, :][0]
+            expected[expected < 0.05] = 0
+            expected[expected >= 0.05] = 1
+
+            hits = len(np.where((inferred == 1) & (expected == 1))[0])
+            misses = len(np.where((inferred == 0) & (expected == 1))[0])
+            false_alarms = len(np.where((inferred == 1) & (expected == 0))[0])
+            print(f'hits: {hits}, misses: {misses}, false_alarms: {false_alarms}')
+
+            if (hits + false_alarms == 0) | (hits + misses == 0) | (hits + misses + false_alarms == 0):
+                continue
+
+            csi = hits / (hits + misses + false_alarms)
+            far = false_alarms / (hits + false_alarms)
+            pod = hits / (hits + misses)
+
+            results.append([csi, far, pod])
+
+        return results
