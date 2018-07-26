@@ -10,6 +10,7 @@ from chainer import cuda
 import dataset
 import network
 from PIL import Image
+import csv
 
 
 def eval():
@@ -31,25 +32,42 @@ def eval():
     print("loading model from " + args.model)
     serializers.load_npz(args.model, model)
 
-    results = []
-    for i in range(args.eval_data_range_index[0], args.eval_data_range_index[1]):
-        x, t = test[i]
+    all_results = [[]] * 3
+    for i in range(3):
+        all_results[i] = []
 
-        x = np.expand_dims(x, 0)
-        t = np.expand_dims(t, 0)
+    for target_frame in range(3):
+        results = []
+        for i in range(args.eval_data_range_index[0], args.eval_data_range_index[1]):
+            x, t = test[i]
 
-        if args.gpu >= 0:
-            cuda.get_device_from_id(0).use()
-            model.to_gpu()
-            t = cuda.cupy.array(t)
-        results.extend(model.eval(x, t))
+            x = np.expand_dims(x, 0)
+            t = np.expand_dims(t, 0)
 
-    results = np.array(results)
-    print(f'N: {len(results)}')
-    print(f'average: {np.average(results, axis=0)}')
-    print(f'median: {np.median(results, axis=0)}')
-    print(f'std: {np.std(results, axis=0)}')
+            if args.gpu >= 0:
+                cuda.get_device_from_id(0).use()
+                model.to_gpu()
+                t = cuda.cupy.array(t)
+            score = model.eval(x, t, target_frame)
+            if score is not None:
+                results.append(score)
+
+        results = np.array(results)
+        print(f'target_frame: {target_frame}')
+        print(f'N: {len(results)}')
+        print(f'average: {np.average(results, axis=0)}')
+        print(f'median: {np.median(results, axis=0)}')
+        print(f'std: {np.std(results, axis=0)}')
+        avg = np.average(results, axis=0)
+        all_results[target_frame] = avg
+
+    with open("eval.csv","w") as f:
+        writer = csv.writer(f, lineterminator="\n")
+        writer.writerow(['csi', 'far', 'pod'])
+        for result in all_results:
+            writer.writerow(result)
 
 
 if __name__ == '__main__':
     eval()
+

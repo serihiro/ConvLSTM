@@ -162,3 +162,5 @@ venv.bak/
 *.npz
 img/
 /result*/
+*.csv
+
