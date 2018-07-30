@@ -222,6 +222,7 @@ class JmaGpzNetwork(Chain):
         self.e2.reset_state()
         self.e3.reset_state()
 
+
         for i in range(x.shape[1]):
             xi = Variable(self.xp.array([x[:, i, :, :]], dtype=self.xp.float32))
             xi = F.transpose(xi, (1, 0, 2, 3))

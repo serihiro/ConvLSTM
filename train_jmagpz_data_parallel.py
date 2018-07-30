@@ -27,10 +27,11 @@ def train():
     parser.add_argument('--test_data_index', '-test_data', nargs='+', default=[4000, 5225])
     parser.add_argument('--files', '-f', nargs='+', default=['jmagpz.npz'])
     parser.add_argument('--result', '-r', type=str, default='results')
+    parser.add_argument('--profile', type=bool, default=False)
     args = parser.parse_args()
 
     train = dataset.JmaGpzDataset(args.train_data_index[0], args.train_data_index[1],
-                                  args.inf, args.outf, file=args.files)
+                                  args.inf, args.outf, file=args.files, profile_get_example=args.profile)
     train_iter = iterators.MultiprocessIterator(train, batch_size=args.batch, shuffle=True)
     test = dataset.JmaGpzDataset(args.test_data_index[0], args.test_data_index[1],
                                  args.inf, args.outf, file=args.files)

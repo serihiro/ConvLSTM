@@ -1,6 +1,10 @@
 import numpy as np
 import chainer
-
+import time
+from datetime import datetime
+import csv
+from pathlib import Path
+import sys
 
 class MovingMnistDataset(chainer.dataset.DatasetMixin):
     def __init__(self, l, r, inn, outn, path="./mnist_test_seq.npy"):
@@ -22,7 +26,15 @@ class MovingMnistDataset(chainer.dataset.DatasetMixin):
 
 
 class JmaGpzDataset(chainer.dataset.DatasetMixin):
-    def __init__(self, l, r, inn, outn, file="./jmagpz.npz"):
+    def __init__(self, l, r, inn, outn, file="./jmagpz.npz", profile_get_example=False):
+        self._profile_get_example = profile_get_example
+        if profile_get_example:
+            self._profile_get_example_csv_path = f'./profile_get_example_{datetime.now().strftime("%Y%m%d_%H%M%S%f")}.csv'
+            Path(self._profile_get_example_csv_path).touch(exist_ok=True)
+            with open(self._profile_get_example_csv_path, 'w') as f:
+                writer = csv.writer(f, lineterminator='\n')
+                writer.writerow(['index', 'elapsed_time', 'size', 'timestamp'])
+
         if (type(file) is list) & (len(file) > 1):
             self.data = JmaGpzDataset.MultipleFileData(l, r, inn, outn, file)
         else:
@@ -33,7 +45,25 @@ class JmaGpzDataset(chainer.dataset.DatasetMixin):
         return self.data.__len__()
 
     def get_example(self, i):
-        return self.data.get_example(i)
+        if self._profile_get_example:
+            result = None
+            start = time.time()
+            result = self.data.get_example(i)
+            end = time.time()
+            elapsed_time = (end - start) * 1000 # ms
+            
+            with open(self._profile_get_example_csv_path, 'a') as f:
+                writer = csv.writer(f, lineterminator='\n')
+                writer.writerow([
+                    i, 
+                    elapsed_time, 
+                    sys.getsizeof(result[0].data) + sys.getsizeof(result[1].data),
+                    datetime.now().strftime("%Y/%m/%d %H:%M:%S.%f")[:-3]
+                ])
+            
+            return result
+        else:
+            return self.data.get_example(i)
 
     class SingleFileData:
         def __init__(self, l, r, inn, outn, file_path):

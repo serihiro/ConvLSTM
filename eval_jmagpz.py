@@ -36,7 +36,7 @@ def eval():
     for i in range(3):
         all_results[i] = []
 
-    for target_frame in range(3):
+    for target_frame in range(args.outf):
         results = []
         for i in range(args.eval_data_range_index[0], args.eval_data_range_index[1]):
             x, t = test[i]
