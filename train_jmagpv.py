@@ -55,7 +55,7 @@ def train():
     trainer.extend(
         extensions.snapshot_object(
             model,
-            f'{args.out}/model_iter_{updater.iteration}'
+            'model_iter_{.updater.iteration}'
         ),
         trigger=(args.snapshot_interval, 'iteration')
     )
