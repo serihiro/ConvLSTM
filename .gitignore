@@ -200,3 +200,5 @@ fabric.properties
 /test.txt
 /results
 /config
+mnist_test_seq.npy
+

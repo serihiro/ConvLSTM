@@ -37,5 +37,5 @@ class JmaGpvDataset(chainer.dataset.DatasetMixin):
         data[data < self._threshold] = 0
         data[data >= self._threshold] = 1
 
-        return data[:self._n_in, :, :, :].astype(np.int32), data[self._n_in:self._n_in + self._n_out, :, :, :].astype(
+        return data[:self._n_in, 0, :, :].astype(np.int32), data[self._n_in:self._n_in + self._n_out, 0, :, :].astype(
             np.int32)
