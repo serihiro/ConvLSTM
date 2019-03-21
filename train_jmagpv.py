@@ -22,6 +22,7 @@ def train():
     parser.add_argument('--snapshot_interval', type=int, default=1000)
     parser.add_argument('--batch_size', '-b', type=int, default=1)
     parser.add_argument('--n_process', type=int, default=1)
+    parser.add_argument('--n_prefetch', type=int, default=1)
     parser.add_argument('--model', '-m', type=str, default=None)
     parser.add_argument('--out', type=str, default='result')
     parser.add_argument('--lr', '-l', type=float, default=0.001)
@@ -29,10 +30,19 @@ def train():
 
     train = dataset.JmaGpvDataset(index_file_path=args.train, n_in=args.n_in, n_out=args.n_out)
     train_iter = chainer.iterators.MultiprocessIterator(
-        dataset=train, batch_size=args.batch_size, n_processes=args.n_process)
+        dataset=train,
+        batch_size=args.batch_size,
+        n_processes=args.n_process,
+        n_prefetch=args.n_prefetch
+    )
     val = dataset.JmaGpvDataset(index_file_path=args.val, n_in=args.n_in, n_out=args.n_out)
     val_iter = chainer.iterators.MultiprocessIterator(
-        dataset=val, batch_size=args.batch_size, repeat=False, n_processes=args.n_process)
+        dataset=val,
+        batch_size=args.batch_size,
+        repeat=False,
+        n_processes=args.n_process,
+        n_prefetch=args.n_prefetch
+    )
 
     model = network.MovingMnistNetwork(sz=[128, 64, 64], n=2)
 
