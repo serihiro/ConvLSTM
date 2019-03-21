@@ -32,7 +32,7 @@ def train():
         dataset=train, batch_size=args.batch_size, n_processes=args.n_process)
     val = dataset.JmaGpvDataset(index_file_path=args.val, n_in=args.n_in, n_out=args.n_out)
     val_iter = chainer.iterators.MultiprocessIterator(
-        dataset=val, batch_size=args.batch_size, n_processes=args.n_process)
+        dataset=val, batch_size=args.batch_size, repeat=False, n_processes=args.n_process)
 
     model = network.MovingMnistNetwork(sz=[128, 64, 64], n=2)
 
