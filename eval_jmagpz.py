@@ -47,6 +47,7 @@ def eval():
             if args.gpu >= 0:
                 cuda.get_device_from_id(0).use()
                 model.to_gpu()
+                x = cuda.cupy.array(x)
                 t = cuda.cupy.array(t)
             score = model.eval(x, t, target_frame)
             if score is not None:

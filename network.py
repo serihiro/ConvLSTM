@@ -222,6 +222,7 @@ class JmaGpzNetwork(Chain):
         self.e2.reset_state()
         self.e3.reset_state()
 
+        print(f'{eval_frame}, {x.shape}, {t.shape}')
 
         for i in range(x.shape[1]):
             xi = Variable(self.xp.array([x[:, i, :, :]], dtype=self.xp.float32))
@@ -250,6 +251,7 @@ class JmaGpzNetwork(Chain):
         expected = t[:, eval_frame, :, :][0]
         expected[expected < 0.05] = 0
         expected[expected >= 0.05] = 1
+        print(f'{inferred.shape}, {expected.shape}')
 
         hits = len(self.xp.where((inferred == 1) & (expected == 1))[0])
         misses = len(self.xp.where((inferred == 0) & (expected == 1))[0])
