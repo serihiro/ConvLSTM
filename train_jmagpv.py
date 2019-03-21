@@ -18,11 +18,11 @@ def train():
     parser.add_argument('--val', type=str, required=True)
     parser.add_argument('--n_in', type=int, default=6)
     parser.add_argument('--n_out', type=int, default=6)
-    parser.add_argument('--epoch', '-e', type=int, default=1)
+    parser.add_argument('--iteration', type=int, default=5000)
+    parser.add_argument('--snapshot_interval', type=int, default=1000)
     parser.add_argument('--batch_size', '-b', type=int, default=1)
     parser.add_argument('--n_process', type=int, default=1)
     parser.add_argument('--model', '-m', type=str, default=None)
-    parser.add_argument('--opt', type=str, default=None)
     parser.add_argument('--out', type=str, default='result')
     parser.add_argument('--lr', '-l', type=float, default=0.001)
     args = parser.parse_args()
@@ -46,27 +46,22 @@ def train():
     opt = optimizers.Adam(alpha=args.lr)
     opt.setup(model)
 
-    if args.opt is not None:
-        print("loading opt from " + args.opt)
-        serializers.load_npz(args.opt, opt)
-
     updater = training.StandardUpdater(train_iter, opt, device=0)
-    trainer = training.Trainer(updater, (args.epoch, 'epoch'), out=args.out)
 
+    trainer = training.Trainer(updater, (args.iteration, 'iteration'), out=args.out)
     trainer.extend(extensions.Evaluator(val_iter, model, device=0))
     trainer.extend(extensions.LogReport(trigger=(10, 'iteration')))
     trainer.extend(extensions.PrintReport(['epoch', 'main/loss', 'validation/main/loss']))
+    trainer.extend(
+        extensions.snapshot_object(
+            model,
+            f'{args.out}/model_iter_{updater.iteration}'
+        ),
+        trigger=(args.snapshot_interval, 'iteration')
+    )
     trainer.extend(extensions.ProgressBar(update_interval=1))
 
     trainer.run()
-
-    model_name = f"{args.out}/results/model"
-    print("saving model to " + model_name)
-    serializers.save_npz(model_name, model)
-
-    opt_name = f"{args.out}/results/opt"
-    print("saving opt to " + opt_name)
-    serializers.save_npz(opt_name, opt)
 
 
 if __name__ == '__main__':
