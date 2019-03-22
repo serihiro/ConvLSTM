@@ -14,12 +14,12 @@ import network
 
 def generate():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--test', '-m', type=str, required=True)
-    parser.add_argument('--model', '-m', type=str, required=True)
+    parser.add_argument('--test', type=str, required=True)
+    parser.add_argument('--model', type=str, required=True)
     parser.add_argument('--n_in', type=int, default=6)
     parser.add_argument('--n_out', type=int, default=6)
     parser.add_argument('--out', type=str, default="img_jmagpv/")
-    parser.add_argument('--id', '-i', type=int, default=0)
+    parser.add_argument('--id', type=int, default=0)
     args = parser.parse_args()
 
     test = dataset.JmaGpvDataset(index_file_path=args.test, n_in=args.n_in, n_out=args.n_out)
