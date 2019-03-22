@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 
-import numpy as np
 import argparse
+
 import chainer
-from chainer import training
-from chainer import iterators, optimizers, serializers
 from chainer import cuda
+from chainer import optimizers, serializers
+from chainer import training
 from chainer.training import extensions
+
 import dataset
 import network
 
@@ -27,16 +28,19 @@ def train():
     parser.add_argument('--model', '-m', type=str, default=None)
     parser.add_argument('--out', type=str, default='result')
     parser.add_argument('--lr', '-l', type=float, default=0.001)
+    parser.add_argument('--threshold', type=float, default=0.5)
     args = parser.parse_args()
 
-    train = dataset.JmaGpvDataset(root_path=args.root_path, index_file_path=args.train, n_in=args.n_in, n_out=args.n_out)
+    train = dataset.JmaGpvDataset(root_path=args.root_path, index_file_path=args.train, n_in=args.n_in,
+                                  threshold=args.threshold, n_out=args.n_out)
     train_iter = chainer.iterators.MultiprocessIterator(
         dataset=train,
         batch_size=args.batch_size,
         n_processes=args.n_process,
         n_prefetch=args.n_prefetch
     )
-    val = dataset.JmaGpvDataset(root_path=args.root_path, index_file_path=args.val, n_in=args.n_in, n_out=args.n_out)
+    val = dataset.JmaGpvDataset(root_path=args.root_path, index_file_path=args.val, n_in=args.n_in,
+                                threshold=args.threshold, n_out=args.n_out)
     val_iter = chainer.iterators.MultiprocessIterator(
         dataset=val,
         batch_size=args.batch_size,
