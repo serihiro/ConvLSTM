@@ -1,5 +1,7 @@
-import numpy as np
+import os
+
 import chainer
+import numpy as np
 
 
 class MovingMnistDataset(chainer.dataset.DatasetMixin):
@@ -22,8 +24,8 @@ class MovingMnistDataset(chainer.dataset.DatasetMixin):
 
 
 class JmaGpvDataset(chainer.dataset.DatasetMixin):
-    def __init__(self, index_file_path, n_in, n_out, threshold=5.0):
-        with open(index_file_path, mode='r') as f:
+    def __init__(self, index_file_path, n_in, n_out, root_path=".", threshold=5.0):
+        with open(os.path.join(root_path, index_file_path), mode='r') as f:
             self._path_list = f.read().split('\n')
         self._n_in = n_in
         self._n_out = n_out

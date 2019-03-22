@@ -16,6 +16,7 @@ def train():
     parser = argparse.ArgumentParser()
     parser.add_argument('--train', type=str, required=True)
     parser.add_argument('--val', type=str, required=True)
+    parser.add_argument('--root_path', type=str, default='.')
     parser.add_argument('--n_in', type=int, default=6)
     parser.add_argument('--n_out', type=int, default=6)
     parser.add_argument('--iteration', type=int, default=5000)
@@ -28,14 +29,14 @@ def train():
     parser.add_argument('--lr', '-l', type=float, default=0.001)
     args = parser.parse_args()
 
-    train = dataset.JmaGpvDataset(index_file_path=args.train, n_in=args.n_in, n_out=args.n_out)
+    train = dataset.JmaGpvDataset(root_path=args.root_path, index_file_path=args.train, n_in=args.n_in, n_out=args.n_out)
     train_iter = chainer.iterators.MultiprocessIterator(
         dataset=train,
         batch_size=args.batch_size,
         n_processes=args.n_process,
         n_prefetch=args.n_prefetch
     )
-    val = dataset.JmaGpvDataset(index_file_path=args.val, n_in=args.n_in, n_out=args.n_out)
+    val = dataset.JmaGpvDataset(root_path=args.root_path, index_file_path=args.val, n_in=args.n_in, n_out=args.n_out)
     val_iter = chainer.iterators.MultiprocessIterator(
         dataset=val,
         batch_size=args.batch_size,
