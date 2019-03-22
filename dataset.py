@@ -25,17 +25,18 @@ class MovingMnistDataset(chainer.dataset.DatasetMixin):
 
 class JmaGpvDataset(chainer.dataset.DatasetMixin):
     def __init__(self, index_file_path, n_in, n_out, root_path=".", threshold=5.0):
-        with open(os.path.join(root_path, index_file_path), mode='r') as f:
+        with open(index_file_path, mode='r') as f:
             self._path_list = f.read().split('\n')
         self._n_in = n_in
         self._n_out = n_out
         self._threshold = threshold
+        self._root_path = root_path
 
     def __len__(self):
         return len(self._path_list)
 
     def get_example(self, i):
-        data = np.load(self._path_list[i])
+        data = np.load(os.path.join(self._root_path, self._path_list[i]))
         data[data < self._threshold] = 0
         data[data >= self._threshold] = 1
 
