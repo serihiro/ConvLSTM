@@ -18,7 +18,7 @@ def generate():
     parser.add_argument('--model', type=str, required=True)
     parser.add_argument('--n_in', type=int, default=6)
     parser.add_argument('--n_out', type=int, default=6)
-    parser.add_argument('--out', type=str, default="img_jmagpv/")
+    parser.add_argument('--out', type=str, default="img_jmagpv")
     parser.add_argument('--id', type=int, default=0)
     args = parser.parse_args()
 

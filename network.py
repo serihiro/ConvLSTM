@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import chainer
 from chainer import Variable
@@ -103,7 +104,7 @@ class MovingMnistNetwork(Chain):
             # save input images
             if self.directory is not None:
                 for j in range(x.shape[0]):
-                    filename = self.directory + "input" + str(j) + "-" + str(i) + ".png"
+                    filename = os.path.join(self.directory, "input" + str(j) + "-" + str(i) + ".png")
                     self.save_image(x[j, i, :, :].data, filename)
 
             xi = F.embed_id(x[:, i, :, :], We)
@@ -132,9 +133,9 @@ class MovingMnistNetwork(Chain):
             # save output and teacher images
             if self.directory is not None:
                 for j in range(t.shape[0]):
-                    filename = self.directory + "truth" + str(j) + "-" + str(i) + ".png"
+                    filename = os.path.join(self.directory, "truth" + str(j) + "-" + str(i) + ".png")
                     self.save_image(t[j, i, :, :].data, filename)
-                    filename = self.directory + "output" + str(j) + "-" + str(i) + ".png"
+                    filename = os.path.join(self.directory, "output" + str(j) + "-" + str(i) + ".png")
                     self.save_image(self.xp.argmax(ans[j, :, :, :].data, 0).astype(np.int32), filename)
 
             cur_loss = F.softmax_cross_entropy(ans, t[:, i, :, :])
